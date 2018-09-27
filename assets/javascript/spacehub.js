@@ -502,7 +502,6 @@ var launchCountdown = {
         $(".launch-info").empty();
         // assign queryURL to get "next" launch
         var queryURL = "https://launchlibrary.net/1.3/launch/next/1";
-        // console.log(queryURL);
         // then ajax call
         $.ajax({
             url: queryURL,
@@ -571,8 +570,6 @@ var launchCountdown = {
     },
     // method for blastoff button
     blastOff: function () {
-        // initialize url array	
-        var launchVidURLs = [];
         // initialize ids array
         var launchIDs = [];
         // initialize total var
@@ -580,7 +577,6 @@ var launchCountdown = {
 
         // use currentDate to get a range of launches
         // get yesterday's date in YYYY-MM-DD
-        // console.log(d);
         var yesterday = d.setDate(d.getDate() - 1);
         // get 6 months ago from yesterday date
         var sixMonths = d.setDate(d.getDate() - 181);
@@ -589,61 +585,46 @@ var launchCountdown = {
         // format dates
         var formatYesterday = moment(yesterday).format("YYYY-MM-DD");
         var formatSixMonths = moment(sixMonths).format("YYYY-MM-DD");
-        // console.log(formatYesterday);
-        // console.log(formatSixMonths);
 
         // create queryURL in the form of https://launchlibrary.net/1.3/launch?startdate=formatSixMonths&enddate=formatYesterday
         var queryURL = "https://launchlibrary.net/1.3/launch?startdate=" + formatSixMonths + "&enddate=" + formatYesterday;
-        // console.log(queryURL);
         // then ajax call
         $.ajax({
             url: queryURL,
             method: "GET"
         }).then(function (response) {
-            // console.log(response);
             // update total
             total = response.total;
 
             // create next queryURL in the form of https://launchlibrary.net/1.3/launch?startdate=formatSixMonths&enddate=formatYesterday&limit=total
-            // console.log(total);
             var queryURLLimit = queryURL + "&limit=" + total;
-            // console.log(queryURLLimit);
-
             // then ajax call
             $.ajax({
                 url: queryURLLimit,
                 method: "GET"
             }).then(function (response) {
-                // console.log(response);
-                // console.log(response.launches.length)
                 // loop through response pushing IDs
                 for (i = 0; i < response.launches.length - 1; i++) {
                     launchIDs.push(response.launches[i]["id"]);
                 }
-                // console.log(launchIDs)
 
                 // pick a random ID from the Array
                 var randomID = launchIDs[Math.floor(Math.random() * launchIDs.length)];
-                // console.log(randomID);
 
                 // create next queryURL using randomID
                 var queryURLID = "https://launchlibrary.net/1.3/launch/" + randomID;
-                // console.log(queryURLID);
 
                 // then ajax call
                 $.ajax({
                     url: queryURLID,
                     method: "GET"
                 }).then(function (response) {
-                    // console.log(response);
                     // store vidsURLs
                     var vidURLsArray = response.launches[0]["vidURLs"]
-                    // console.log(vidURLsArray);
                     // check if vidURLsArray is not null
                     if (vidURLsArray !== null && vidURLsArray.length !== 0) {
                         // pick a random url
                         var randomVidURL = vidURLsArray[Math.floor(Math.random() * vidURLsArray.length)];
-                        // console.log(randomVidURL);
                         // check if string includes youtube
                         if (randomVidURL.includes("youtube")) {
                             // convert URL to embed URL
@@ -661,8 +642,6 @@ var launchCountdown = {
                     else {
                         launchCountdown.blastOff();
                     }
-                    // push URL to embeded youtube div
-
                 })
             })
         })
